@@ -1,0 +1,578 @@
+definitions:
+  models.Image:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      product_id:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
+  models.ImageCreate:
+    properties:
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  models.OrderItemDto:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  models.OrderItemResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      product:
+        $ref: '#/definitions/models.Product'
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.OrderResponse:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      customer_name:
+        type: string
+      id:
+        type: string
+      is_paid:
+        type: boolean
+      order_items:
+        items:
+          $ref: '#/definitions/models.OrderItemResponse'
+        type: array
+      phone:
+        type: integer
+      total_price:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.Product:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/models.Image'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.ProductDto:
+    properties:
+      category:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/models.ImageCreate'
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+    type: object
+  models.ProductResponse:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/models.Image'
+        type: array
+      name:
+        type: string
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.UserCreate:
+    properties:
+      address:
+        maxLength: 100
+        minLength: 6
+        type: string
+      email:
+        type: string
+      name:
+        maxLength: 50
+        minLength: 4
+        type: string
+      password:
+        maxLength: 50
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 13
+        minLength: 8
+        type: string
+    required:
+    - address
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  models.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.UserResponse:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.UserUpdate:
+    properties:
+      address:
+        maxLength: 100
+        minLength: 6
+        type: string
+      password:
+        maxLength: 50
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 13
+        minLength: 8
+        type: string
+    required:
+    - address
+    - password
+    - phone
+    type: object
+  web.WebResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      status:
+        type: string
+    type: object
+info:
+  contact:
+    email: hi.boedi8@gmail.com
+    name: hi.boedi8@gmail.com
+    url: https://www.github.com/hiboedi
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: FindAll Order from the store
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.OrderResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: FindAll Order from the store
+      tags:
+      - Order
+    post:
+      consumes:
+      - application/json
+      description: create Order for the store
+      parameters:
+      - description: Order create
+        in: body
+        name: Order
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderItemDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.OrderResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: create Order for the store
+      tags:
+      - Order
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: FindAll Products from the store
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ProductResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: FindAll Products from the store
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: create Product for the store
+      parameters:
+      - description: Product create
+        in: body
+        name: Product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ProductResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: create Product for the store
+      tags:
+      - Product
+  /products/{productId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Product from the store
+      parameters:
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Product from the store
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: FindById Product from the store
+      parameters:
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ProductResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: FindById Product from the store
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update Product from the store
+      parameters:
+      - description: Product Update
+        in: body
+        name: Product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductDto'
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ProductResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Product from the store
+      tags:
+      - Product
+  /users/{userId}:
+    put:
+      consumes:
+      - application/json
+      description: Update user for the authenticated user
+      parameters:
+      - description: User update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.UserResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user for the user
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and set a session cookie
+      parameters:
+      - description: User Login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.UserResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      summary: Log in a user
+      tags:
+      - User
+  /users/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout for the user
+      tags:
+      - User
+  /users/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Refresh Token for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Refresh Token for the user
+      tags:
+      - User
+  /users/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: User Sign Up
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      summary: Sign up a new user
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    description: Bearer token authentication
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
